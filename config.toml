@@ -1,0 +1,35 @@
+
+# Shared Codex configuration
+model_reasoning_effort = "low"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[features]
+multi_agent = true
+
+[agents]
+max_threads = 4
+
+[agents.dotnet-coder]
+description = "Implements C# and .NET applications."
+config_file = "agents/dotnet-coder.toml"
+
+[agents.azure-infra]
+description = "Develops Azure infrastructure and IaC."
+config_file = "agents/azure-infra.toml"
+
+[agents.tester]
+description = "Creates and reviews automated tests."
+config_file = "agents/tester.toml"
+
+[agents.architect]
+description = "Reviews software and Azure architecture."
+config_file = "agents/architect.toml"
+
+[agents.requirements]
+description = "Analyzes requirements and acceptance criteria."
+config_file = "agents/requirements.toml"
+
+[agents.ui-ux]
+description = "Designs and reviews user interfaces and UX."
+config_file = "agents/ui-ux.toml"

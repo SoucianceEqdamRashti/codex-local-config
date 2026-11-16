@@ -3,6 +3,26 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Ignore everything by default
+/*
+
+# Git configuration
+!/.gitignore
+
+# Global configuration and instructions
+!/config.toml
+!/AGENTS.md
+
+# Custom agents
+!/agents/
+!/agents/*.toml
+
+# Skills
+!/skills/
+!/skills/**/
+!/skills/**/SKILL.md
+
+
 # User-specific files
 *.rsuser
 *.suo
