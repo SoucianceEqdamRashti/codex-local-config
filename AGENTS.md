@@ -1,10 +1,10 @@
 # Shared Engineering Instructions for Codex
 
-## Scope and precedence
+## Scope and Precedence
 
 These are default engineering rules for all agents. Follow more specific repository `AGENTS.md` instructions and the assigned agent role when they apply. Do not impose .NET conventions on Bicep, documentation, or CI/CD-only work. Inspect the repository, existing conventions, SDK pinning, and relevant skills before changing code. Preserve compatible existing architecture unless a change is requested and justified.
 
-## Operating workflow
+## Operating Workflow
 
 1. Understand the request, success criteria, constraints, and affected files. Ask only for consequential missing decisions; state reasonable assumptions.
 2. Inspect existing code, tests, configuration, and dependencies. Prefer small, incremental changes over broad rewrites.
@@ -13,7 +13,7 @@ These are default engineering rules for all agents. Follow more specific reposit
 5. Run focused checks first, then relevant broader checks. Never claim validation succeeded if it was not executed.
 6. Summarize changed behavior, tests and commands run, remaining risks, and any assumptions.
 
-## Platform and language
+## Platform and Language
 
 - For new .NET projects, default to the latest supported stable .NET SDK and runtime available in the environment; target .NET 10 / C# 14 or later when supported. Respect `global.json`, existing target frameworks, deployment constraints, and project compatibility. If a `global.json` file does not exist, then create one.
 - Enable nullable reference types and implicit usings when appropriate. Prefer modern, readable C# syntax (file-scoped namespaces, primary constructors where they improve clarity, collection expressions, pattern matching, records for suitable immutable data, and required members when useful). Do not use new syntax solely for novelty.
@@ -22,7 +22,7 @@ These are default engineering rules for all agents. Follow more specific reposit
 - Use built-in dependency injection, options validation, `TimeProvider` for time-dependent logic, and `System.Text.Json` with reused serialization options or source generation where justified.
 - Avoid speculative abstractions, premature optimization, and new dependencies without clear benefit. Verify package/API compatibility and consult official Microsoft Learn/.NET documentation for uncertain or version-specific behavior.
 
-## Architecture: feature-first and pragmatic
+## Architecture: Feature-First and Pragmatic
 
 - Prefer Vertical Slice Architecture for application features: group endpoint, request/response contracts, validation, business behavior, and related tests by feature or bounded context, not by technical layer alone.
 - Use ASP.NET Core Minimal APIs by default for new HTTP APIs. Define endpoints in cohesive feature modules and register them explicitly. Use typed results (`TypedResults` / `Results<...>`) when useful, appropriate status codes, route groups, endpoint names, OpenAPI metadata, authorization, and input validation.
@@ -49,12 +49,60 @@ These are default engineering rules for all agents. Follow more specific reposit
 - Follow Arrange / Act / Assert; test observable outcomes, boundary conditions, invalid input, cancellation, authorization, concurrency, and failure paths as relevant.
 - Prefer fast, deterministic unit tests for business behavior. Mock external boundaries, not the system under test; avoid overspecifying implementation details. Prefer simple fakes over elaborate mocking setups.
 - Add focused integration tests for Minimal API HTTP contracts, EF Core persistence/query behavior, migrations, and external integration boundaries. Use `WebApplicationFactory` where appropriate.
-- Do not use EF Core InMemory provider as a substitute for relational database behavior. Prefer the actual database engine via disposable test infrastructure when fidelity matters; SQLite is only suitable when its differences are acceptable.
 - Avoid network-dependent or time-dependent tests unless explicitly classified as integration/end-to-end tests. Use `TimeProvider` and deterministic data.
 - Do not aim for arbitrary coverage percentages; prioritize meaningful risk-based coverage and regression protection.
 - For bug fixes, first add a test reproducing the defect whenever feasible.
 
-## Security, reliability, and observability
+## Integration Testing Standards
+
+- Use xUnit v3 for all automated tests.
+- Use Testcontainers for .NET for database integration tests.
+- Run integration tests against the same database engine used in production (e.g., SQL Server or PostgreSQL).
+- NEVER use EF Core InMemory provider for integration tests.
+- NEVER substitute SQLite for SQL Server or PostgreSQL.
+- NEVER mock or fake DbContext, DbSet, or repositories in database integration tests.
+- Use WebApplicationFactory<Program> for ASP.NET Core Minimal API integration tests.
+- Start the database container before tests and configure the application to use its connection string.
+- Apply EF Core migrations to the test database.
+- Ensure tests are isolated and repeatable.
+- Clean up test data between tests using Respawn or an equivalent database reset strategy.
+- Dispose of containers and resources after tests.
+- If Docker or the container runtime is unavailable, report the blocker. Never silently fall back to an in-memory database.
+
+## Security Engineering and Testing
+
+- Apply secure-by-default principles to all generated code.
+- Follow OWASP ASVS and OWASP API Security Top 10.
+- Apply least privilege to identities, APIs, databases, and Azure resources.
+- Never hardcode secrets, credentials, or access tokens.
+- Treat all external input as untrusted.
+
+### Security Testing
+
+- Consider security implications for every new or modified API endpoint, database operation, and infrastructure resource.
+- Delegate security reviews and security test generation to the `security-tester` subagent when relevant.
+- Prioritize authentication, authorization, tenant isolation, injection, and sensitive data exposure.
+- Generate automated security regression tests for identified risks.
+- Use property-based security tests when invariants can be expressed across multiple inputs.
+- Prefer reproducible tests over manual verification.
+- Never substitute mocked security behavior for real authorization checks in integration tests.
+
+### Security Validation
+
+- Run applicable security tests after code changes.
+- Report discovered vulnerabilities with evidence, severity, and recommended remediation.
+- Do not silently suppress security findings or weaken security controls to make tests pass.
+- Only perform active security scans against explicitly authorized environments.
+- Never execute destructive security tests against production systems.
+
+### Security Skills
+
+- Use `dotnet-security-tests` for application security.
+- Use `api-security-testing` for OWASP API testing.
+- Use `azure-security-audit` for Azure infrastructure.
+- Use `security-ci-pipeline` for automated CI/CD checks.
+
+## Security, Reliability, and Observability
 
 - Enforce authentication and authorization at API boundaries and for resource-level access; never rely on UI checks alone.
 - Validate untrusted input and return consistent, safe problem details. Do not leak secrets, tokens, connection strings, PII, or stack traces.
@@ -65,11 +113,11 @@ These are default engineering rules for all agents. Follow more specific reposit
 
 ## Infrastructure and delivery agent boundaries
 
-- Azure/Bicep agents: prefer reusable modules, typed parameters, symbolic references, secure defaults, explicit scopes, consistent naming and tags; validate with Bicep build/lint and Azure deployment what-if when credentials and target scope are available. A what-if is a remote Azure evaluation, not an offline/local-only check. Never deploy without approval.
+- Azure/Bicep agents: prefer reusable modules, typed parameters, symbolic references, secure defaults, explicit scopes, consistent naming and tags; validate with Bicep build/lint and Azure deployment what-if when credentials and target scope are available. A what-if is a remote Azure evaluation, not an offline/local-only check. Never deploy without approval. For Bicep changes, use snapshot validation. For Azure Deployment Stacks, use the azure-stack-tool skill PowerShell workflow for both what-if and approved deployments.
 - CI/CD agents: use least-privilege identities, pinned/approved dependencies, build-test-scan gates, environment separation, artifact provenance, and deployment approvals where warranted. Do not print secrets in logs.
 - Architecture and requirements agents: establish business goals, measurable nonfunctional requirements, constraints, alternatives, and acceptance criteria before prescribing technology.
 
-## Local validation and completion
+## Local Validation and Completion
 
 Run commands appropriate to the changed solution, adapting paths, framework, and test runner to the repository:
 
@@ -86,6 +134,6 @@ For xUnit v3, determine whether the repository uses VSTest or Microsoft.Testing.
 
 Before finalizing, verify: requirements met; public contracts and security reviewed; tests meaningful and passing; build/format checks run; documentation updated if behavior changed; no generated files edited manually; no secrets introduced. Report exact validation outcomes and blockers. Never fabricate tool execution or success.
 
-## Skills and documentation
+## Skills and Documentation
 
 Use available relevant `SKILL.md` files for specialized workflows (Vertical Slice, DDD, EF Core, Bicep, architecture reviews, requirements, and CI/CD). Treat skills as task guidance rather than reasons to add complexity. Prefer official .NET, ASP.NET Core, EF Core, xUnit, and Azure documentation; use Microsoft Learn MCP when configured. When documentation conflicts with the installed SDK/package version, verify the version-specific behavior before coding.

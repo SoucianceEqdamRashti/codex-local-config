@@ -1,9 +1,9 @@
-
 # Shared Codex configuration
 model_reasoning_effort = "low"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 
+notify = [ "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\\app\\resources\\cua_node\\bin\\node_modules\\@oai\\sky\\bin\\windows\\codex-computer-use.exe", "turn-ended" ]
 [features]
 multi_agent = true
 
@@ -18,7 +18,7 @@ config_file = "agents/dotnet-coder.toml"
 description = "Develops Azure infrastructure and IaC."
 config_file = "agents/azure-infra.toml"
 
-[agents.tester]
+[agents.dotnet-tester]
 description = "Creates and reviews automated tests."
 config_file = "agents/tester.toml"
 
@@ -34,6 +34,12 @@ config_file = "agents/requirements.toml"
 description = "Designs and reviews user interfaces and UX."
 config_file = "agents/ui-ux.toml"
 
+[agents.dotnet-security-tester]
+description = "Security testing specialist for .NET 10, ASP.NET Core Minimal APIs, EF Core, Azure SQL, Entra ID, and Azure infrastructure. Reviews code for OWASP vulnerabilities, authentication and authorization flaws, SQL injection, sensitive data exposure, insecure dependencies, and Azure misconfigurations. Designs automated security regression tests using xUnit v3, Testcontainers, Hedgehog, OWASP ZAP, and Schemathesis."
+config_file = "agents/dotnet-security-tester.toml"
+
+
+
 [tui]
 screen_reader_detection_done = true
 
@@ -42,3 +48,73 @@ screen_reader_detection_done = true
 
 [projects.'c:\users\souciance.eqdam-rash']
 trust_level = "trusted"
+
+[projects.'C:\playground\ffcg\github\validateagents\src']
+trust_level = "trusted"
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = '\\?\C:\Users\souciance.eqdam-rash\.cache\codex-runtimes\codex-primary-runtime\plugins\openai-primary-runtime'
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = '\\?\C:\playground\ffcg\github\codex-local-config\.tmp\bundled-marketplaces\openai-bundled'
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[mcp_servers.node_repl]
+args = []
+command = 'C:\Program Files\WindowsApps\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\app\resources\cua_node\bin\node_repl.exe'
+env_vars = ["BROWSER_USE_ACCESS_EXECUTOR_ID", "BROWSER_USE_ACCESS_PIPE_PATH", "BROWSER_USE_ACCESS_VERIFYING_IDENTITY", "CODEX_WINDOWS_REGISTERED_CORE"]
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = 'C:\Program Files\WindowsApps\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\app\resources\cua_node\bin\node_modules'
+NODE_REPL_NODE_PATH = 'C:\Program Files\WindowsApps\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\app\resources\cua_node\bin\node.exe'
+NODE_REPL_TRUSTED_CODE_PATHS = 'C:\playground\ffcg\github\codex-local-config;C:\Program Files\WindowsApps\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\app\resources\cua_node\bin\node_modules'
+CODEX_HOME = 'C:\playground\ffcg\github\codex-local-config'
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab,mcpapps"
+BROWSER_USE_TINYSKY_ENABLED = "1"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.1117.41037"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"C:/playground/ffcg/github/codex-local-config/plugins/cache/openai-bundled/browser/26.1117.41037/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+SKY_CUA_NATIVE_PIPE = "1"
+SKY_CUA_NATIVE_PIPE_DIRECTORY = '\\.\pipe\codex-computer-use-1b93f7cc-3c2c-4aaa-81f3-62f6932d65a3'
+CODEX_CLI_PATH = 'C:\Program Files\WindowsApps\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\app\resources\codex.exe'
+NODE_REPL_UNTRUSTED_ENV_ALLOWLIST = "CODEX_WINDOWS_REGISTERED_CORE"
+NODE_REPL_LAZY_TRUSTED_WORKER = "0"
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
+
+[windows]
+sandbox = "unelevated"

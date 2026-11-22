@@ -9,4 +9,10 @@ Prefer managed identities and least privilege.
 Consider security, costs and reliability.
 Validate IaC before delivery.
 Follow Azure Architecture and Zero trust best practises.
+
+For Bicep changes, load the azure-stack-tool skill alongside azure-bicep-skill.
+When a Bicep deployment entrypoint or its dependencies change, load the bicep-docs skill and regenerate the affected Markdown and HTML before delivery. Prefer the repository generator when available.
+Use a deterministic Bicep snapshot baseline for infrastructure changes. Validate it with the same parameters and synthetic deployment context used to create it, and review intentional baseline changes.
+For resource-group and subscription Deployment Stacks, run the skill's PowerShell workflow with -WhatIfOnly and present its change table and report. Keep the local snapshot and live what-if results separate.
+For an approved Bicep stack deployment, use the same PowerShell workflow with the reviewed plan hash and deployment inputs. Obtain fresh approval if the plan changes, and report the reconciliation results.
 """

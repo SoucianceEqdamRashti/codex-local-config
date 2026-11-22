@@ -20,6 +20,10 @@ Trigger this skill when you see any of the following:
 
 Do **not** trigger for: pure ARM JSON work (recommend converting to Bicep first), Terraform-only workflows, Azure portal click-ops walkthroughs.
 
+## Bicep snapshots and deployment stacks
+
+Use the azure-stack-tool skill for snapshot validation after Bicep edits. For Deployment Stacks, follow that skill's PowerShell preview and approved deployment workflow. The standard ARM deployment examples below apply to conventional deployments.
+
 ## Core principles
 
 ### 1. AVM first, custom second

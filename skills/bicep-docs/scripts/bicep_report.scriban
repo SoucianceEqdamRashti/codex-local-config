@@ -1,0 +1,113 @@
+{{~ title = custom.title ?? module.name ~}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title | html.escape }}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f4f7fb; color: #162842; font: 1rem/1.55 system-ui, sans-serif; }
+    header { background: #102948; color: white; padding: 2.5rem 0; }
+    header p { margin: .65rem 0 0; color: #dce9f9; }
+    .wrap { width: min(72rem, 100% - 2rem); margin-inline: auto; }
+    h1, h2 { line-height: 1.15; margin: 0; }
+    h1 { font-size: clamp(1.9rem, 5vw, 3rem); }
+    h2 { font-size: 1.35rem; margin-bottom: .85rem; }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem 1.35rem; padding: 1rem 0; }
+    a { color: #145697; text-underline-offset: .15em; }
+    header a { color: #dce9f9; }
+    section { background: white; border: 1px solid #d9e3ef; border-radius: .6rem; margin: 0 0 1rem; padding: 1.25rem; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { border-bottom: 1px solid #d9e3ef; padding: .65rem .75rem; vertical-align: top; }
+    thead th { background: #eaf1fa; }
+    tbody th { font-weight: 600; }
+    code { font-size: .9em; overflow-wrap: anywhere; }
+    .detail { display: block; color: #415770; margin-top: .2rem; }
+    footer { padding: .5rem 0 2rem; }
+    @media print {
+      body, header, section { background: white; color: black; }
+      header p, header a { color: black; }
+      nav { display: none; }
+      tr { break-inside: avoid; }
+      thead { display: table-header-group; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>{{ title | html.escape }}</h1>
+      {{ if module.description }}<p>{{ module.description | html.escape }}</p>{{ end }}
+      <p>Deployment scope <code>{{ module.targetScope | html.escape }}</code> · Source <a href="./{{ custom.sourceFile | html.escape }}"><code>{{ custom.sourceFile | html.escape }}</code></a></p>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav aria-label="Report sections">
+      <a href="#parameters">Parameters</a>
+      <a href="#outputs">Outputs</a>
+      <a href="#modules">Modules</a>
+    </nav>
+    <section aria-labelledby="parameters">
+      <h2 id="parameters">Parameters</h2>
+      <div class="table-wrap">
+        <table aria-labelledby="parameters">
+          <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Required</th><th scope="col">Description and constraints</th></tr></thead>
+          <tbody>
+{{ for parameter in module.parameters }}
+            <tr>
+              <th scope="row"><code>{{ parameter.name | html.escape }}</code></th>
+              <td><code>{{ parameter.type | html.escape }}</code></td>
+              <td>{{ if parameter.required }}Yes{{ else }}No{{ end }}</td>
+              <td>
+                {{ parameter.description | html.escape }}
+                {{ if parameter.defaultValue != null && !parameter.secure }}<span class="detail">Default <code>{{ parameter.defaultValue | html.escape }}</code></span>{{ end }}
+                {{ if parameter.allowedValues.size > 0 }}<span class="detail">Allowed values <code>{{ parameter.allowedValues | array.join ", " | html.escape }}</code></span>{{ end }}
+                {{ if parameter.minLength != null }}<span class="detail">Minimum length {{ parameter.minLength }}</span>{{ end }}
+                {{ if parameter.secure }}<span class="detail">Secure parameter</span>{{ end }}
+              </td>
+            </tr>
+{{ end }}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section aria-labelledby="outputs">
+      <h2 id="outputs">Outputs</h2>
+      <div class="table-wrap">
+        <table aria-labelledby="outputs">
+          <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead>
+          <tbody>
+{{ for output in module.outputs }}
+            <tr>
+              <th scope="row"><code>{{ output.name | html.escape }}</code></th>
+              <td><code>{{ output.type | html.escape }}</code></td>
+              <td>{{ description = output.description ?? custom[output.name]; if description }}{{ description | html.escape }}{{ else }}&mdash;{{ end }}</td>
+            </tr>
+{{ end }}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section aria-labelledby="modules">
+      <h2 id="modules">Referenced modules</h2>
+      <div class="table-wrap">
+        <table aria-labelledby="modules">
+          <thead><tr><th scope="col">Symbolic name</th><th scope="col">Reference and version</th><th scope="col">Description</th></tr></thead>
+          <tbody>
+{{ for reference in module.references }}
+            <tr>
+              <th scope="row"><code>{{ reference.symbolicName | html.escape }}</code></th>
+              <td><code>{{ reference.path | html.escape }}</code></td>
+              <td>{{ reference.description | html.escape }}</td>
+            </tr>
+{{ end }}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <footer>See the <a href="./{{ custom.markdownFile | html.escape }}">generated Markdown reference</a>.</footer>
+  </main>
+</body>
+</html>
