@@ -35,4 +35,12 @@ Run the first command to preview. It creates an expiring Azure what-if record. S
 
 Run the second command only after the user approves the reviewed plan and settings. Feed the reviewed `PlanHash` from `report.json` into `-ApprovedPlanHash` with the same inputs. If the fresh preview changes the hash, present the new plan and obtain fresh approval. Pass `-AllowUnmanage` only with explicit authorization for the policy and possible removals.
 
+In GitHub Actions, run the preview automatically for relevant pushes and gate the deployment job on approval. Bind deployment to the reviewed commit and plan hash. Recompute the plan just before deploying, and obtain new approval if the hash changes.
+
+If a preview shows a skipped nested deployment, unresolved diagnostics, or unexpected detaches, inspect the underlying changes before requesting approval. An apparent detach can come from an unevaluated module. Where possible, give what-if fixed resource names and scopes and use known IDs for pre-existing identities. Preserve explicit dependencies when replacing references that previously established deployment ordering. Rerun what-if and confirm the intended resources remain managed.
+
+When wrapping Azure CLI for CI, keep stdout and stderr separate and validate the exit code and JSON payload before interpreting results. A confirmation prompt can contaminate JSON on stdout. Use the command's noninteractive confirmation flag where supported only after the workflow has enforced approval and validated the fresh plan.
+
+For unclear create or modify results, compare full resource IDs against the stack's managed resources and run a fresh post-deployment what-if. Exact managed membership together with a definite no-change result can establish convergence when Azure normalizes properties or labels an update as created. Failed, deleted, detached, or unexpected operations take precedence. Preserve uncertainty when membership or a definitive follow-up result is missing. When changing reconciliation code, exercise prompt or stdout contamination, updates reported as created, normalized properties, and failures that must override convergence.
+
 Summarize the deployment state and reconciliation report. A successful deployment operation alone cannot establish a property change. Preserve `Not Verified` for inconclusive rows. Workflow exit codes are 0 for successful preview or reconciliation, 2 for preview failure, 3 for deployment failure, 4 for approval failure, and 5 for reconciliation discrepancies.

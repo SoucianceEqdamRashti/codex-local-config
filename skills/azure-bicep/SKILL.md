@@ -24,6 +24,13 @@ Do **not** trigger for: pure ARM JSON work (recommend converting to Bicep first)
 
 Use the azure-stack-tool skill for snapshot validation after Bicep edits. For Deployment Stacks, follow that skill's PowerShell preview and approved deployment workflow. The standard ARM deployment examples below apply to conventional deployments.
 
+## GitHub OIDC and workload verification
+
+- Bootstrap federation with an authorized operator identity. Give GitHub deployment identities only the Azure permissions needed at the target scope, and use a separate managed identity for the running app. Verify that the federated credential matches the actual issuer, audience, and subject for each workflow job. Branch and environment jobs can present different subjects, and repository subject templates can include immutable identifiers. Inspect claim values using safe diagnostics without logging the token.
+- Obtain a fresh Azure login immediately before late post-release telemetry checks when build, deployment, or approval waits can outlast the original credentials. Run the login in a job with OIDC permission and the matching federated credential.
+- Verify both runtime readiness and monitoring. Probe a health endpoint that actually checks the backing service, then query the workbook's underlying telemetry for fresh rows scoped to the deployed resources and the release time. Check each required signal with bounded retries for ingestion delay.
+- For workbook error filters, first inspect representative raw startup and platform rows. Exclude only observed routine messages with narrow source and message predicates. Keep unfiltered logs available, and verify that unexpected failures still appear, including clear failure text in rows labeled informational.
+
 ## Core principles
 
 ### 1. AVM first, custom second
