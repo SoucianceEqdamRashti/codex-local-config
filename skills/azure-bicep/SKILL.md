@@ -27,9 +27,15 @@ Use the azure-stack-tool skill for snapshot validation after Bicep edits. For De
 ## GitHub OIDC and workload verification
 
 - Bootstrap federation with an authorized operator identity. Give GitHub deployment identities only the Azure permissions needed at the target scope, and use a separate managed identity for the running app. Verify that the federated credential matches the actual issuer, audience, and subject for each workflow job. Branch and environment jobs can present different subjects, and repository subject templates can include immutable identifiers. Inspect claim values using safe diagnostics without logging the token.
-- Obtain a fresh Azure login immediately before late post-release telemetry checks when build, deployment, or approval waits can outlast the original credentials. Run the login in a job with OIDC permission and the matching federated credential.
-- Verify both runtime readiness and monitoring. Probe a health endpoint that actually checks the backing service, then query the workbook's underlying telemetry for fresh rows scoped to the deployed resources and the release time. Check each required signal with bounded retries for ingestion delay.
-- For workbook error filters, first inspect representative raw startup and platform rows. Exclude only observed routine messages with narrow source and message predicates. Keep unfiltered logs available, and verify that unexpected failures still appear, including clear failure text in rows labeled informational.
+- Obtain a fresh Azure login immediately before late telemetry checks in a job with OIDC permission and the matching federated credential.
+- Probe a health endpoint that checks its backing service, then run the deployed workbook queries against the deployed resources and a fresh time window.
+- Scope workbook error filters to observed routine messages. Keep unfiltered logs available and verify that unexpected failures still appear, including failure text in informational rows.
+
+| Signal | Next action | Stop when |
+| --- | --- | --- |
+| OIDC login or token acquisition fails | Compare issuer, audience, and subject with the job's federated credential. Refresh the login if it expired. For authorization failures, inspect the intended principal's role and scope. | Authentication and access succeed for the intended job, or the missing access is identified. |
+| Backing-service health probe fails | Check deployment and startup logs, connectivity, database authentication, and any bootstrap or migration step. | The dependency-backed probe passes or the failing dependency is identified. |
+| A deployed workbook query succeeds with zero fresh rows | Retry the empty signal within the workload's ingestion budget. On query or authorization errors, diagnose the error before retrying. | Every required query returns fresh rows, or the budget expires and the verifier reports the missing signals. |
 
 ## Core principles
 
