@@ -58,7 +58,7 @@ module storage 'br/public:avm/res/storage/storage-account:0.14.3' = {
 }
 ```
 
-See `references/AVM-GUIDE.md` for the module catalog, the resource (`res`) vs pattern (`ptn`) distinction, and version-pinning strategy.
+During design, check the public AVM catalog and the published module contract for each in-scope resource, including managed child resources. Use a pinned AVM when its contract satisfies the requirements. Before choosing a local resource implementation, record the AVM candidate and the specific unmet requirement with supporting evidence. See the [AVM design check](references/AVM-GUIDE.md#check-each-resource-during-design) for what to compare and record.
 
 ### 2. Strong types and decorators on every param
 

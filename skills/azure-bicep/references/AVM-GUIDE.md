@@ -77,6 +77,13 @@ For each module, read:
 - `tests/e2e/` (working examples for common scenarios)
 - `version.json` (current version)
 
+## Check each resource during design
+
+1. List the resource types and managed children the design creates or changes. Reuse a decision for repeated instances with the same requirements. Include child resources created implicitly by an AVM when they affect ownership or behavior.
+2. For each type, check the [Bicep AVM resource catalog](https://azure.github.io/Azure-Verified-Modules/indexes/bicep/bicep-resource-modules/) and the published candidate's versioned parameters, defaults, resource declarations and outputs. Compare the service API, required properties, deployment order and security settings. For an existing deployment, also check exact names, scopes, resource and role assignment IDs, lifecycle behavior and stack ownership.
+3. Choose a pinned AVM if it meets the contract. A thin local wrapper can preserve an existing interface or compose AVMs. If a local declaration is needed, record the resource type, AVM and version checked (or the catalog lookup if no candidate exists), and the exact gap and consequence. Include an evidence link in the existing design, PR description or a short comment by the exception. Use one decision for resources that share the same gap.
+4. For an in-place swap, compare the compiled contract and snapshots, then check the authorized live stack what-if against the existing baseline before applying. Require the intended managed IDs and inspect extra resources, detaches and effective property changes. Follow the stack workflow's normal approval scope.
+
 ## When to write a custom module
 
 Justified reasons:
