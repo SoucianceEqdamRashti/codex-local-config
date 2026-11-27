@@ -1,0 +1,16 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -88,4 +88,5 @@
+ | "Create Foundry" / "Set up Foundry" (ambiguous) | Use `AskUserQuestion`: (a) just an AI Services resource, (b) a project with public access, or (c) a project with network isolation? Route: (a) → [resource/create](resource/create/create-foundry-resource.md), (b) → [project/create](project/create/create-foundry-project.md), (c) → [private-network](resource/private-network/private-network.md) |
+ | Set up Foundry with VNet isolation | [private-network](resource/private-network/private-network.md) |
++| Troubleshoot File Search on a private Standard agent | [Private Standard File Search troubleshooting](resource/private-network/references/private-file-search-troubleshooting.md) |
+ | Create a Foundry project (public) | [project/create](project/create/create-foundry-project.md) |
+ | Create a bare Foundry resource | [resource/create](resource/create/create-foundry-resource.md) |
+--- a/resource/private-network/private-network.md
++++ b/resource/private-network/private-network.md
+@@ -116,3 +116,5 @@
+ Read [references/post-deployment-validation.md](references/post-deployment-validation.md). These checks apply to all paths — PE verification, RBAC audit, `publicNetworkAccess` audit, and end-to-end agent test work regardless of how the infrastructure was deployed.
+
++For upload, indexing, retrieval, or citation failures on a private Standard agent, read [Private Standard File Search troubleshooting](references/private-file-search-troubleshooting.md).
++
+ If any test fails, run `microsoft_docs_search` for the error before attempting remediation.

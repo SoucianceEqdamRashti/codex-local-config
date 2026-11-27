@@ -1,6 +1,6 @@
 ---
 name: azure-stack-tool
-description: Validate Bicep changes with snapshots and use the bundled PowerShell workflow to preview, deploy, and reconcile Azure Deployment Stacks at resource-group or subscription scope.
+description: Validate Bicep changes with snapshots and use the bundled PowerShell workflow to preview, deploy, and reconcile Azure Deployment Stacks at resource-group or subscription scope. Use the recreation reference for reviewed stack-owned teardown and replacement.
 ---
 
 ## Bicep snapshots
@@ -14,6 +14,8 @@ bicep snapshot ./infra/example.preview.bicepparam --mode validate --subscription
 Use the same arguments with `--mode overwrite` to create the first baseline or accept an intentional change after reviewing the diff. Review and commit the generated baseline with the Bicep changes. Snapshot validation evaluates the template locally. The live stack what-if checks Azure state and stack actions.
 
 ## Stack preview and deployment
+
+For an explicitly requested delete-and-recreate operation, read [Destructive Azure Deployment Stack recreation](references/destructive-recreation.md) before preparing the plan.
 
 Resolve `scripts/Invoke-StackWorkflow.ps1` relative to this skill directory. Pass the target subscription GUID, stack name, scope, template and deployment-specific parameter files. Use `-ResourceGroup` for `-Scope group` or `-Location` for `-Scope sub`. For a resource-group target, `scripts/Invoke-InfraPreviews.ps1` can run snapshot validation and the live what-if together with separate headings and exit codes. Pass the explicit template file and separate snapshot and deployment parameter files.
 
